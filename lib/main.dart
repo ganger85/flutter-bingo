@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:myBingoFlutter/card.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:flutter/services.dart';
 void main() {
   runApp(MyApp());
 }
@@ -66,6 +66,15 @@ class _MyHomePageState extends State<MyHomePage> {
   bool bingo = false;
   String isL = "";
   Map<String, dynamic> gameDetail;
+
+  @override
+  void initState(){
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
+  }
 
   final _myController = TextEditingController();
   final NameController = TextEditingController();
@@ -261,7 +270,6 @@ class _MyHomePageState extends State<MyHomePage> {
   loadGame() async {
     var r = await http.get("https://ganger-bingo.herokuapp.com/game/${game}");
     var g = json.decode(r.body);
-    print(g);
     setState(() {
       gameDetail = g;
       if(gameDetail['line']!=null)
