@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Bingo2'),
+      home: MyHomePage(title: 'Ganger-Bingo'),
     );
   }
 }
@@ -60,6 +60,8 @@ class _MyHomePageState extends State<MyHomePage> {
   List<bool> _selections1 = List.generate(9, (_) => false);
   List<bool> _selections2 = List.generate(9, (_) => false);
   List<bool> _selections3 = List.generate(9, (_) => false);
+  String botonLineaText='Linea!';
+  String botonBingoText='Bingo!';
   bool linea = false;
   bool bingo = false;
   String isL = "";
@@ -76,10 +78,13 @@ class _MyHomePageState extends State<MyHomePage> {
       userName = name;
       carton = c;
     });
-    Timer.periodic(Duration(milliseconds: 500), (_) => loadGame());
+    Timer.periodic(Duration(milliseconds: 1000), (_) => loadGame());
   }
 
   Future<void> _isLinea() async {
+    setState(() {
+      isL = '';
+    });
     var r = await carton.isLinea(userName);
     print(r.body);
 
@@ -93,6 +98,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _isBingo() async {
+    setState(() {
+      isL = '';
+    });
     var r = await carton.isBingo(userName);
     print(r.body);
 
@@ -115,11 +123,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Container getTable(Carton c) {
     var _1 =
-        new List<Text>.from(c.value.take(9).map((e) => Text(e.toString())));
+        new List<Text>.from(c.value.take(9).map((e) =>spanText(e)));
     var _2 = new List<Text>.from(
-        c.value.skip(9).take(9).map((e) => Text(e.toString())));
+        c.value.skip(9).take(9).map((e) =>spanText(e)));
     var _3 = new List<Text>.from(
-        c.value.skip(18).take(9).map((e) => Text(e.toString())));
+        c.value.skip(18).take(9).map((e) =>spanText(e)));
 
     var t1 = new ToggleButtons(
         children: _1,
@@ -158,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
             margin: EdgeInsets.all(20),
             child: Row(children: [
               FlatButton(
-                child: Text('Linea!'),
+                child: Text(botonLineaText),
                 color: Colors.blueAccent,
                 textColor: Colors.white,
                 onPressed: () {
@@ -166,13 +174,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
               FlatButton(
-                child: Text('Bingo!'),
+                child: Text(botonBingoText),
                 color: Colors.blueAccent,
                 textColor: Colors.white,
                 onPressed: () {
                   _isBingo();
-                },
-              )
+                }
+              ),Text(isL)
             ]),
           )
         ]));
@@ -222,15 +230,7 @@ class _MyHomePageState extends State<MyHomePage> {
             if (carton == null) enterGameText(),
             if (carton == null) enterGameField(),
             if (carton == null) enterGameButton(),
-            if (carton != null) getTable(carton),
-            if (linea) AppBar(title: Text('Linea!!!')),
-            if (bingo) AppBar(title: Text('Bingo!!!')),
-            if (carton != null && !linea && !bingo && isL != "")
-              AppBar(title: Text(isL)),
-            if (gameDetail != null && gameDetail['line'] != null)
-              AppBar(title: Text('linea para ${gameDetail['line']}')),
-            if (gameDetail != null && gameDetail['bingo'] != null)
-              AppBar(title: Text('bingo para ${gameDetail['bingo']}')),
+            if (carton != null) getTable(carton)
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -248,13 +248,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget enterGameField() {
     return TextFormField(
       controller: _myController,
-      decoration: InputDecoration(hintText: 'Game id'),
+      decoration: InputDecoration(hintText: 'PIN'),
     );
   }
 
   Widget enterGameText() {
     return Text(
-      'Enter your game id:',
+      'PIN:',
     );
   }
 
@@ -264,10 +264,20 @@ class _MyHomePageState extends State<MyHomePage> {
     print(g);
     setState(() {
       gameDetail = g;
+      if(gameDetail['line']!=null)
+      botonLineaText = 'Linea para ${gameDetail['line']}';
+      if(gameDetail['bingo']!=null)
+      botonBingoText = 'Bingo para ${gameDetail['bingo']}';
+
     });
   }
 }
-
+Text spanText (int e){
+  if(e==0)
+    return Text(' ') ;
+  else
+    return Text(e.toString()) ;
+}
 bool toBoolean(String str) {
   return str != '0' && str != 'false' && str != '';
 }
